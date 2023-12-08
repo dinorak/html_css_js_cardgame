@@ -1,65 +1,79 @@
-//game
-
 // Standard variables
 var player1 = { health: 100 };
 var player2 = { health: 100 };
 var allCards = [];
 var card = {
-    'card name': "",
+    name: "",
     attack: 0,
     health: 0,
     img: ""
 };
-var player1Deck = [];
 
-//CARD OPTION BUTTONS
+var tinyKnight = Object.assign({}, card, {
+    name: "Tiny Knight",
+    attack: 2,
+    health: 4,
+    img: "card-images/littleknight.jpg"
+});
+
+var superNinja = Object.assign({}, card, {
+    name: "Super Ninja",
+    attack: 3,
+    health: 3,
+    img: "card-images/4_WEAPON_NINJA.png"
+});
+
+var demonEyeball = Object.assign({}, card, {
+    name: "Demon Eyeball",
+    attack: 4,
+    health: 2,
+    img: "card-images/eyeball.jpg"
+});
+
+AddToAllCards(tinyKnight);
+AddToAllCards(superNinja);
+AddToAllCards(demonEyeball);
+
+var player1Deck = [];
+console.log(player1Deck);
+
+// CARD OPTION BUTTONS
 const buttons = document.querySelectorAll('.btn');
 
-function handleClick(event) {
-    const button = event.target;
-    console.log("button pressed");
+// CLICK HANDLER
+function handleClick(button) {
+    const randomCard = JSON.parse(button.getAttribute('data-random-card'));
+    player1Deck.push(randomCard);
+
+    // Remove the card from the available cards (allCards array)
+    const cardIndex = allCards.findIndex((card) => card.name === randomCard.name);
+    allCards.splice(cardIndex, 1);
+
+    console.log(player1Deck);
 }
 
 buttons.forEach((button) => {
-    button.addEventListener('click', handleClick);
+    button.addEventListener('click', function(event) {
+        handleClick(button);
+    });
 });
-
-//CARD CREATION
-function selectCard(card) {
-    player1Deck.push(card);
-}
 
 function AddToAllCards(card) {
     allCards.push(card);
 }
 
-// Function to create cards
-function createCard(cardName, attack, health, img) {
-    var card = {
-        'card name': cardName,
-        attack: attack,
-        health: health,
-        img: img
-    };
-    allCards.push(card);
-}
-
-// Create cards
-createCard("Tiny Knight", 2, 4, "card-images/littleknight.jpg");
-createCard("Demon Eyeball", 3, 3, "card-images/eyeball.jpg");
-createCard("Super Ninja", 4, 4, "card-images/4_WEAPON_NINJA.png");
-
 // Assign random cards to buttons on startup
 var assignedCards = [];
 
-buttons.forEach((button) => {
+buttons.forEach((button, index) => {
     var randomCard = getRandomCardUnique();
-    assignedCards.push(randomCard);
-    button.textContent = randomCard['card name'];
+    button.textContent = randomCard.name;
+    button.setAttribute("data-card-index", index);
+    button.setAttribute("data-random-card", JSON.stringify(randomCard));
 
     // Create an image element and set its source
     var cardImg = new Image();
-    cardImg.src = randomCard['img'];
+    cardImg.src = randomCard.img;
 
     // Append the image element to the button
     button.appendChild(cardImg);
@@ -80,7 +94,6 @@ function getRandomCardUnique() {
         randomCard = getRandomCard();
     }
 
+    assignedCards.push(randomCard);
     return randomCard;
-
 }
-
